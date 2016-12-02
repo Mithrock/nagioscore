@@ -2,6 +2,11 @@
 Nagios Core 4 Change Log
 ########################
 
+4.2.3.2 - 2016-12-02
+--------------------
+FIXES
+* reverted fix for "external command during reload doesn't work (John Frickson)" introduced in 4.2.3 because of a potential deadlock/nagios blocking
+
 4.2.3.1 - 2016-11-23
 --------------------
 FIXES
