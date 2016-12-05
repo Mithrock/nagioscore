@@ -794,6 +794,8 @@ int main(int argc, char **argv) {
 			/* reset the restart flag */
 			sigrestart = FALSE;
 
+			logit(NSLOG_PROCESS_INFO, TRUE, "We are ready to execute external commands...\n");
+
 			/* fire up command file worker */
 			launch_command_file_worker();
 			timing_point("Command file worker launched\n");

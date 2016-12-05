@@ -138,6 +138,7 @@ static int command_input_handler(int sd, int events, void *discard) {
 	char *buf;
 	unsigned long size;
 
+	logit(NSLOG_PROCESS_INFO, TRUE, "Ready to accept external command...\n");
 	ret = iocache_read(command_worker.ioc, sd);
 	log_debug_info(DEBUGL_COMMANDS, 2, "Read %d bytes from command worker\n", ret);
 	if (ret == 0) {
@@ -155,7 +156,10 @@ static int command_input_handler(int sd, int events, void *discard) {
 
 		/* Drop commands while restarting because we may not be ready to 
 			handle them */
-		if(TRUE == sigrestart) continue;
+		if(TRUE == sigrestart) {
+		    logit(NSLOG_RUNTIME_WARNING, TRUE, "We are not ready for external commands yet, ignoring command '%s'\n", buf);
+		    continue;
+		}
 
 		if ((cmd_ret = process_external_command1(buf)) != CMD_ERROR_OK) {
 			logit(NSLOG_EXTERNAL_COMMAND | NSLOG_RUNTIME_WARNING, TRUE, "External command error: %s\n", cmd_error_strerror(cmd_ret));
