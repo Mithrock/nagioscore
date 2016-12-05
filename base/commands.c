@@ -138,7 +138,6 @@ static int command_input_handler(int sd, int events, void *discard) {
 	char *buf;
 	unsigned long size;
 
-	logit(NSLOG_PROCESS_INFO, TRUE, "Ready to accept external command...\n");
 	ret = iocache_read(command_worker.ioc, sd);
 	log_debug_info(DEBUGL_COMMANDS, 2, "Read %d bytes from command worker\n", ret);
 	if (ret == 0) {
