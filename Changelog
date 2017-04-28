@@ -2,6 +2,11 @@
 Nagios Core 4 Change Log
 ########################
 
+4.2.3.3 - 2017-04-28
+--------------------
+ENHANCEMENTS
+* added NEBTYPE_ACKNOWLEDGEMENT_REMOVE broker events for hosts and services
+
 4.2.3.2 - 2016-12-02
 --------------------
 FIXES
