@@ -590,6 +590,10 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 
 		if(temp_service->acknowledgement_type == ACKNOWLEDGEMENT_NORMAL && (state_change == TRUE || hard_state_change == FALSE)) {
 
+#ifdef USE_EVENT_BROKER
+	        /* send data to event broker */
+	        broker_acknowledgement_data(NEBTYPE_ACKNOWLEDGEMENT_REMOVE, NEBFLAG_NONE, NEBATTR_NONE, SERVICE_ACKNOWLEDGEMENT, (void *)temp_service, NULL, NULL, 0, 0, 0, NULL);
+#endif
 			temp_service->problem_has_been_acknowledged = FALSE;
 			temp_service->acknowledgement_type = ACKNOWLEDGEMENT_NONE;
 
@@ -597,6 +601,11 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 			delete_service_acknowledgement_comments(temp_service);
 			}
 		else if(temp_service->acknowledgement_type == ACKNOWLEDGEMENT_STICKY && temp_service->current_state == STATE_OK) {
+
+#ifdef USE_EVENT_BROKER
+	        /* send data to event broker */
+	        broker_acknowledgement_data(NEBTYPE_ACKNOWLEDGEMENT_REMOVE, NEBFLAG_NONE, NEBATTR_NONE, SERVICE_ACKNOWLEDGEMENT, (void *)temp_service, NULL, NULL, 0, 0, 0, NULL);
+#endif
 
 			temp_service->problem_has_been_acknowledged = FALSE;
 			temp_service->acknowledgement_type = ACKNOWLEDGEMENT_NONE;
@@ -2995,6 +3004,11 @@ int handle_host_state(host *hst) {
 		/* reset the acknowledgement flag if necessary */
 		if(hst->acknowledgement_type == ACKNOWLEDGEMENT_NORMAL && (state_change == TRUE || hard_state_change == FALSE)) {
 
+#ifdef USE_EVENT_BROKER
+	        /* send data to event broker */
+	        broker_acknowledgement_data(NEBTYPE_ACKNOWLEDGEMENT_REMOVE, NEBFLAG_NONE, NEBATTR_NONE, HOST_ACKNOWLEDGEMENT, (void *)hst, NULL, NULL, 0, 0, 0, NULL);
+#endif
+
 			hst->problem_has_been_acknowledged = FALSE;
 			hst->acknowledgement_type = ACKNOWLEDGEMENT_NONE;
 
@@ -3002,6 +3016,11 @@ int handle_host_state(host *hst) {
 			delete_host_acknowledgement_comments(hst);
 			}
 		else if(hst->acknowledgement_type == ACKNOWLEDGEMENT_STICKY && hst->current_state == HOST_UP) {
+
+#ifdef USE_EVENT_BROKER
+	        /* send data to event broker */
+	        broker_acknowledgement_data(NEBTYPE_ACKNOWLEDGEMENT_REMOVE, NEBFLAG_NONE, NEBATTR_NONE, HOST_ACKNOWLEDGEMENT, (void *)hst, NULL, NULL, 0, 0, 0, NULL);
+#endif
 
 			hst->problem_has_been_acknowledged = FALSE;
 			hst->acknowledgement_type = ACKNOWLEDGEMENT_NONE;
