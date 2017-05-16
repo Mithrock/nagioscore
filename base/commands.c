@@ -4175,6 +4175,11 @@ void acknowledge_service_problem(service *svc, char *ack_author, char *ack_data,
 /* removes a host acknowledgement */
 void remove_host_acknowledgement(host *hst) {
 
+#ifdef USE_EVENT_BROKER
+	/* send data to event broker */
+	broker_acknowledgement_data(NEBTYPE_ACKNOWLEDGEMENT_REMOVE, NEBFLAG_NONE, NEBATTR_NONE, HOST_ACKNOWLEDGEMENT, (void *)hst, NULL, NULL, 0, 0, 0, NULL);
+#endif
+
 	/* set the acknowledgement flag */
 	hst->problem_has_been_acknowledged = FALSE;
 
@@ -4190,6 +4195,11 @@ void remove_host_acknowledgement(host *hst) {
 
 /* removes a service acknowledgement */
 void remove_service_acknowledgement(service *svc) {
+
+#ifdef USE_EVENT_BROKER
+	/* send data to event broker */
+	broker_acknowledgement_data(NEBTYPE_ACKNOWLEDGEMENT_REMOVE, NEBFLAG_NONE, NEBATTR_NONE, SERVICE_ACKNOWLEDGEMENT, (void *)svc, NULL, NULL, 0, 0, 0, NULL);
+#endif
 
 	/* set the acknowledgement flag */
 	svc->problem_has_been_acknowledged = FALSE;
