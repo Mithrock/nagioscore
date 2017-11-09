@@ -542,7 +542,11 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 
 			/* set a flag to remember that we launched a check */
 			first_host_check_initiated = TRUE;
+#if 1//COSERVIT_RETRY_FIX
+			schedule_host_check(temp_host, current_time, CHECK_OPTION_DEPENDENCY_CHECK | CHECK_OPTION_NO_ATTEMPT_INCREMENT);
+#else
 			schedule_host_check(temp_host, current_time, CHECK_OPTION_DEPENDENCY_CHECK);
+#endif
 			}
 		}
 
@@ -690,7 +694,11 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 
 				/* else launch an async (parallel) check of the host */
 				else
+#if 1//COSERVIT_RETRY_FIX
+					schedule_host_check(temp_host, current_time, CHECK_OPTION_DEPENDENCY_CHECK | CHECK_OPTION_NO_ATTEMPT_INCREMENT);
+#else
 					schedule_host_check(temp_host, current_time, CHECK_OPTION_DEPENDENCY_CHECK);
+#endif
 				}
 			}
 
@@ -777,7 +785,11 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 
 			/* only run a new check if we can and have to */
 			if(execute_host_checks && state_change == TRUE && temp_host->last_check + cached_host_check_horizon < current_time) {
+#if 1//COSERVIT_RETRY_FIX
+				schedule_host_check(temp_host, current_time, CHECK_OPTION_DEPENDENCY_CHECK | CHECK_OPTION_NO_ATTEMPT_INCREMENT );
+#else
 				schedule_host_check(temp_host, current_time, CHECK_OPTION_DEPENDENCY_CHECK);
+#endif
 				}
 			else {
 				log_debug_info(DEBUGL_CHECKS, 1, "* Using cached host state: %d\n", temp_host->current_state);
@@ -793,7 +805,11 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 			log_debug_info(DEBUGL_CHECKS, 1, "Host is currently %s.\n", host_state_name(temp_host->current_state));
 
 			if(execute_host_checks && state_change == TRUE) {
+#if 1//COSERVIT_RETRY_FIX
+				schedule_host_check(temp_host, current_time, CHECK_OPTION_NONE | CHECK_OPTION_NO_ATTEMPT_INCREMENT);
+#else
 				schedule_host_check(temp_host, current_time, CHECK_OPTION_NONE);
+#endif
 				}
 			/* else fake the host check, but (possibly) resend host notifications to contacts... */
 			else {
@@ -2086,7 +2102,13 @@ int run_async_host_check(host *hst, int check_options, double latency, int sched
 			return ERROR;
 			}
 
+#if 1//COSERVIT_RETRY_FIX
+        /* if last check did not count retry, do not take cached value */
+		if ((hst->last_check + cached_host_check_horizon > time(NULL)) && !(hst->check_options & CHECK_OPTION_NO_ATTEMPT_INCREMENT)) {
+#else
 		if (hst->last_check + cached_host_check_horizon > time(NULL)) {
+#endif
+		}
 			log_debug_info(DEBUGL_CHECKS, 0, "Host '%s' was last checked within its cache horizon. Aborting check\n", hst->name);
 			return ERROR;
 			}
@@ -2138,7 +2160,11 @@ int run_async_host_check(host *hst, int check_options, double latency, int sched
 		hst->check_options = CHECK_OPTION_NONE;
 
 	/* adjust host check attempt */
+#if 1//COSERVIT_RETRY_FIX
+	adjust_host_check_attempt(hst, TRUE, check_options);
+#else
 	adjust_host_check_attempt(hst, TRUE);
+#endif
 
 	/* set latency (temporarily) for macros and event broker */
 	old_latency = hst->latency;
@@ -2486,7 +2512,13 @@ int process_host_check_result(host *hst, int new_state, char *old_plugin_output,
 
 	/* we have to adjust current attempt # for passive checks, as it isn't done elsewhere */
 	if(hst->check_type == CHECK_TYPE_PASSIVE && passive_host_checks_are_soft == TRUE)
+	{
+#if 1//COSERVIT_RETRY_FIX
+        adjust_host_check_attempt(hst, FALSE, check_options);
+#else
 		adjust_host_check_attempt(hst, FALSE);
+#endif
+	}
 
 	/* log passive checks - we need to do this here, as some my bypass external commands by getting dropped in checkresults dir */
 	if(hst->check_type == CHECK_TYPE_PASSIVE) {
@@ -2868,7 +2900,11 @@ int check_host_check_viability(host *hst, int check_options, int *time_is_valid,
 
 
 /* adjusts current host check attempt before a new check is performed */
+#if 1//COSERVIT_RETRY_FIX
+int adjust_host_check_attempt(host *hst, int is_active, int check_options) {
+#else
 int adjust_host_check_attempt(host *hst, int is_active) {
+#endif
 
 	log_debug_info(DEBUGL_FUNCTIONS, 0, "adjust_host_check_attempt()\n");
 
@@ -2887,7 +2923,11 @@ int adjust_host_check_attempt(host *hst, int is_active) {
 		hst->current_attempt = 1;
 
 	/* increment current attempt number */
+#if 1//COSERVIT_RETRY_FIX
+	else if((hst->current_attempt < hst->max_attempts) && !(check_options & CHECK_OPTION_NO_ATTEMPT_INCREMENT))
+#else
 	else if(hst->current_attempt < hst->max_attempts)
+#endif
 		hst->current_attempt++;
 
 	log_debug_info(DEBUGL_CHECKS, 2, "New check attempt number = %d\n", hst->current_attempt);
