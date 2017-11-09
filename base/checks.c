@@ -2108,7 +2108,6 @@ int run_async_host_check(host *hst, int check_options, double latency, int sched
 #else
 		if (hst->last_check + cached_host_check_horizon > time(NULL)) {
 #endif
-		}
 			log_debug_info(DEBUGL_CHECKS, 0, "Host '%s' was last checked within its cache horizon. Aborting check\n", hst->name);
 			return ERROR;
 			}
