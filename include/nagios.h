@@ -546,11 +546,7 @@ void handle_service_flap_detection_disabled(service *);		/* handles the details 
 
 /**** Route/Host Check Functions ****/
 int check_host_check_viability(host *, int, int *, time_t *);
-#if 1//COSERVIT_RETRY_FIX
-int adjust_host_check_attempt(host *, int, int);
-#else
 int adjust_host_check_attempt(host *, int);
-#endif
 int determine_host_reachability(host *);
 int process_host_check_result(host *, int, char *, int, int, int, unsigned long);
 int perform_on_demand_host_check(host *, int *, int, int, unsigned long);
