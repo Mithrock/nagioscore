@@ -538,7 +538,11 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 
 		/* if the host has never been checked before, verify its status */
 		/* only do this if 1) the initial state was set to non-UP or 2) the host is not scheduled to be checked soon (next 5 minutes) */
+#if 1//COSERVIT_RETRY_FIX
+		if(execute_initial_host_check_by_service && temp_host->has_been_checked == FALSE && (temp_host->initial_state != HOST_UP || (unsigned long)temp_host->next_check == 0L || (unsigned long)(temp_host->next_check - current_time) > 300)) {
+#else
 		if(temp_host->has_been_checked == FALSE && (temp_host->initial_state != HOST_UP || (unsigned long)temp_host->next_check == 0L || (unsigned long)(temp_host->next_check - current_time) > 300)) {
+#endif
 
 			/* set a flag to remember that we launched a check */
 			first_host_check_initiated = TRUE;
@@ -677,7 +681,7 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 		temp_service->acknowledgement_type = ACKNOWLEDGEMENT_NONE;
 
 		/* verify the route to the host and send out host recovery notifications */
-		if(temp_host->current_state != HOST_UP) {
+		if(execute_host_checks_by_service && temp_host->current_state != HOST_UP) {
 
 			log_debug_info(DEBUGL_CHECKS, 1, "Host is NOT UP, so we'll check it to see if it recovered...\n");
 
@@ -784,7 +788,7 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 			log_debug_info(DEBUGL_CHECKS, 1, "Host is currently UP, so we'll recheck its state to make sure...\n");
 
 			/* only run a new check if we can and have to */
-			if(execute_host_checks && state_change == TRUE && temp_host->last_check + cached_host_check_horizon < current_time) {
+			if(execute_host_checks_by_service && execute_host_checks && state_change == TRUE && temp_host->last_check + cached_host_check_horizon < current_time) {
 #if 1//COSERVIT_RETRY_FIX
 				schedule_host_check(temp_host, current_time, CHECK_OPTION_DEPENDENCY_CHECK | CHECK_OPTION_NO_ATTEMPT_INCREMENT );
 #else
@@ -804,7 +808,7 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 
 			log_debug_info(DEBUGL_CHECKS, 1, "Host is currently %s.\n", host_state_name(temp_host->current_state));
 
-			if(execute_host_checks && state_change == TRUE) {
+			if(execute_host_checks_by_service && execute_host_checks && state_change == TRUE) {
 #if 1//COSERVIT_RETRY_FIX
 				schedule_host_check(temp_host, current_time, CHECK_OPTION_NONE | CHECK_OPTION_NO_ATTEMPT_INCREMENT);
 #else
@@ -2102,7 +2106,7 @@ int run_async_host_check(host *hst, int check_options, double latency, int sched
 			return ERROR;
 			}
 
-#if 1//COSERVIT_RETRY_FIX
+#if 0//!COSERVIT_RETRY_FIX
         /* if last check did not count retry, do not take cached value */
 		if ((hst->last_check + cached_host_check_horizon > time(NULL)) && !(hst->check_options & CHECK_OPTION_NO_ATTEMPT_INCREMENT)) {
 #else
@@ -2922,7 +2926,7 @@ int adjust_host_check_attempt(host *hst, int is_active) {
 		hst->current_attempt = 1;
 
 	/* increment current attempt number */
-#if 1//COSERVIT_RETRY_FIX
+#if 0//!COSERVIT_RETRY_FIX
 	else if((hst->current_attempt < hst->max_attempts) && !(check_options & CHECK_OPTION_NO_ATTEMPT_INCREMENT))
 #else
 	else if(hst->current_attempt < hst->max_attempts)

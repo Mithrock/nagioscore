@@ -696,6 +696,14 @@ int read_main_config_file(char *main_config_file) {
 		else if(!strcmp(variable, "execute_host_checks"))
 			execute_host_checks = (atoi(value) > 0) ? TRUE : FALSE;
 
+#if 1//COSERVIT_RETRY_FIX
+		else if(!strcmp(variable, "fix_execute_host_checks_by_service"))
+			execute_host_checks_by_service = (atoi(value) > 0) ? TRUE : FALSE;
+
+		else if(!strcmp(variable, "fix_execute_initial_host_check_by_service"))
+			execute_initial_host_check_by_service = (atoi(value) > 0) ? TRUE : FALSE;
+#endif
+
 		else if(!strcmp(variable, "accept_passive_host_checks"))
 			accept_passive_host_checks = (atoi(value) > 0) ? TRUE : FALSE;
 

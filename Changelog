@@ -2,10 +2,15 @@
 Nagios Core 4 Change Log
 ########################
 
-4.2.3.4 - 2017-10-18
+4.2.3.4 - 2017-11-10
 --------------------
 FIXES
 * [picked from official version 4.3.0] - on-demand host checks triggered by service checks cause attempt number increments (fredericve)
+* made host check after each service check configurable by:
+    - fix_execute_host_checks_by_service - If <> 0 then after each service check recheck of associated host is planified immediately after.
+                                           If == 0 [default] no host check is performed after service check
+    - fix_execute_initial_host_check_by_service - If <> 0 than after service check the associated host that hasn't been check yet will be checked.
+                                                  If == 0 [default] no host check is performed
 
 4.2.3.3 - 2017-04-28
 --------------------

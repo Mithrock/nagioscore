@@ -168,6 +168,10 @@ int xrddefault_save_state_information(void) {
 	fprintf(fp, "active_service_checks_enabled=%d\n", execute_service_checks);
 	fprintf(fp, "passive_service_checks_enabled=%d\n", accept_passive_service_checks);
 	fprintf(fp, "active_host_checks_enabled=%d\n", execute_host_checks);
+#if 1//COSERVIT_RETRY_FIX
+	fprintf(fp, "fix_host_checks_by_service_enabled=%d\n", execute_host_checks_by_service);
+	fprintf(fp, "fix_initial_host_check_by_service_enabled=%d\n", execute_initial_host_check_by_service);
+#endif
 	fprintf(fp, "passive_host_checks_enabled=%d\n", accept_passive_host_checks);
 	fprintf(fp, "enable_event_handlers=%d\n", enable_event_handlers);
 	fprintf(fp, "obsess_over_services=%d\n", obsess_over_services);
@@ -905,6 +909,16 @@ int xrddefault_read_state_information(void) {
 							if(modified_host_process_attributes & MODATTR_ACTIVE_CHECKS_ENABLED)
 								execute_host_checks = (atoi(val) > 0) ? TRUE : FALSE;
 							}
+#if 1//COSERVIT_RETRY_FIX
+						else if(!strcmp(var, "fix_host_checks_by_service_enabled")) {
+							if(modified_host_process_attributes & MODATTR_ACTIVE_CHECKS_ENABLED)
+								execute_host_checks_by_service = (atoi(val) > 0) ? TRUE : FALSE;
+							}
+						else if(!strcmp(var, "fix_initial_host_check_by_service_enabled")) {
+							if(modified_host_process_attributes & MODATTR_ACTIVE_CHECKS_ENABLED)
+								execute_initial_host_check_by_service = (atoi(val) > 0) ? TRUE : FALSE;
+							}
+#endif
 						else if(!strcmp(var, "passive_host_checks_enabled")) {
 							if(modified_host_process_attributes & MODATTR_PASSIVE_CHECKS_ENABLED)
 								accept_passive_host_checks = (atoi(val) > 0) ? TRUE : FALSE;
