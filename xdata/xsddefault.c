@@ -45,6 +45,10 @@ int enable_notifications;
 int execute_service_checks;
 int accept_passive_service_checks;
 int execute_host_checks;
+#if 1//COSERVIT_RETRY_FIX
+int execute_host_checks_by_service;
+int execute_initial_host_check_by_service;
+#endif
 int accept_passive_host_checks;
 int enable_event_handlers;
 int obsess_over_services;
@@ -197,6 +201,10 @@ int xsddefault_save_status_data(void) {
 	fprintf(fp, "\tactive_service_checks_enabled=%d\n", execute_service_checks);
 	fprintf(fp, "\tpassive_service_checks_enabled=%d\n", accept_passive_service_checks);
 	fprintf(fp, "\tactive_host_checks_enabled=%d\n", execute_host_checks);
+#if 1//COSERVIT_RETRY_FIX
+	fprintf(fp, "\tfix_host_checks_by_service_enabled=%d\n", execute_host_checks_by_service);
+	fprintf(fp, "\tfix_initial_host_check_by_service_enabled=%d\n", execute_initial_host_check_by_service);
+#endif
 	fprintf(fp, "\tpassive_host_checks_enabled=%d\n", accept_passive_host_checks);
 	fprintf(fp, "\tenable_event_handlers=%d\n", enable_event_handlers);
 	fprintf(fp, "\tobsess_over_services=%d\n", obsess_over_services);
@@ -701,6 +709,12 @@ int xsddefault_read_status_data(const char *status_file_name, int options) {
 						accept_passive_service_checks = (atoi(val) > 0) ? TRUE : FALSE;
 					else if(!strcmp(var, "active_host_checks_enabled"))
 						execute_host_checks = (atoi(val) > 0) ? TRUE : FALSE;
+#if 1//COSERVIT_RETRY_FIX
+					else if(!strcmp(var, "fix_host_checks_by_service_enabled"))
+						execute_host_checks_by_service = (atoi(val) > 0) ? TRUE : FALSE;
+					else if(!strcmp(var, "fix_initial_host_check_by_service_enabled"))
+						execute_initial_host_check_by_service = (atoi(val) > 0) ? TRUE : FALSE;
+#endif
 					else if(!strcmp(var, "passive_host_checks_enabled"))
 						accept_passive_host_checks = (atoi(val) > 0) ? TRUE : FALSE;
 					else if(!strcmp(var, "enable_event_handlers"))

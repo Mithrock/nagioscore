@@ -35,6 +35,10 @@ int enable_notifications;
 int execute_service_checks;
 int accept_passive_service_checks;
 int execute_host_checks;
+#if 1//COSERVIT_RETRY_FIX
+int execute_host_checks_by_service;
+int execute_initial_host_check_by_service;
+#endif
 int accept_passive_host_checks;
 int enable_event_handlers;
 int obsess_over_services;
@@ -64,6 +68,10 @@ void init_shared_cfg_vars(int first_time) {
 	execute_service_checks = TRUE;
 	accept_passive_service_checks = TRUE;
 	execute_host_checks = TRUE;
+#if 1//COSERVIT_RETRY_FIX
+	execute_host_checks_by_service = FALSE;
+	execute_initial_host_check_by_service = FALSE;
+#endif
 	accept_passive_host_checks = TRUE;
 	enable_event_handlers = TRUE;
 	obsess_over_services = FALSE;

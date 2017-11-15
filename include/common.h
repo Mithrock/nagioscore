@@ -24,8 +24,8 @@
 
 #include "shared.h"
 
-#define PROGRAM_VERSION "4.2.3.3"
-#define PROGRAM_MODIFICATION_DATE "04-28-2017"
+#define PROGRAM_VERSION "4.2.3.4"
+#define PROGRAM_MODIFICATION_DATE "11-10-2017"
 
 NAGIOS_BEGIN_DECL
 
@@ -58,6 +58,10 @@ extern int enable_notifications;
 extern int execute_service_checks;
 extern int accept_passive_service_checks;
 extern int execute_host_checks;
+#if 1//COSERVIT_RETRY_FIX
+extern int execute_host_checks_by_service;
+extern int execute_initial_host_check_by_service;
+#endif
 extern int accept_passive_host_checks;
 extern int enable_event_handlers;
 extern int obsess_over_services;
@@ -420,7 +424,6 @@ extern const char *cmd_error_strerror(int error_code);
 #define CHECK_OPTION_FRESHNESS_CHECK    2       /* this is a freshness check */
 #define CHECK_OPTION_ORPHAN_CHECK       4       /* this is an orphan check */
 #define CHECK_OPTION_DEPENDENCY_CHECK   8       /* dependency check. different scheduling rules apply */
-
 
 /**************************** PROGRAM MODES ******************************/
 

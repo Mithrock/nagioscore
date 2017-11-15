@@ -538,7 +538,11 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 
 		/* if the host has never been checked before, verify its status */
 		/* only do this if 1) the initial state was set to non-UP or 2) the host is not scheduled to be checked soon (next 5 minutes) */
+#if 1//COSERVIT_RETRY_FIX
+		if(execute_initial_host_check_by_service && temp_host->has_been_checked == FALSE && (temp_host->initial_state != HOST_UP || (unsigned long)temp_host->next_check == 0L || (unsigned long)(temp_host->next_check - current_time) > 300)) {
+#else
 		if(temp_host->has_been_checked == FALSE && (temp_host->initial_state != HOST_UP || (unsigned long)temp_host->next_check == 0L || (unsigned long)(temp_host->next_check - current_time) > 300)) {
+#endif
 
 			/* set a flag to remember that we launched a check */
 			first_host_check_initiated = TRUE;
@@ -673,7 +677,11 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 		temp_service->acknowledgement_type = ACKNOWLEDGEMENT_NONE;
 
 		/* verify the route to the host and send out host recovery notifications */
+#if 1//COSERVIT_RETRY_FIX
+		if(execute_host_checks_by_service && temp_host->current_state != HOST_UP) {
+#else
 		if(temp_host->current_state != HOST_UP) {
+#endif
 
 			log_debug_info(DEBUGL_CHECKS, 1, "Host is NOT UP, so we'll check it to see if it recovered...\n");
 
@@ -682,7 +690,7 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 			else {
 				/* can we use the last cached host state? */
 				/* usually only use cached host state if no service state change has occurred */
-				if((state_change == FALSE || state_changes_use_cached_state == TRUE) && temp_host->has_been_checked == TRUE && ((current_time - temp_host->last_check) <= cached_host_check_horizon)) {
+				if(state_change == FALSE && temp_host->has_been_checked == TRUE && ((current_time - temp_host->last_check) <= cached_host_check_horizon)) {
 					log_debug_info(DEBUGL_CHECKS, 1, "* Using cached host state: %d\n", temp_host->current_state);
 					update_check_stats(ACTIVE_ONDEMAND_HOST_CHECK_STATS, current_time);
 					update_check_stats(ACTIVE_CACHED_HOST_CHECK_STATS, current_time);
@@ -776,7 +784,11 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 			log_debug_info(DEBUGL_CHECKS, 1, "Host is currently UP, so we'll recheck its state to make sure...\n");
 
 			/* only run a new check if we can and have to */
-			if(execute_host_checks && temp_host->last_check + cached_host_check_horizon < current_time) {
+#if 1//COSERVIT_RETRY_FIX
+			if(execute_host_checks_by_service && execute_host_checks && state_change == TRUE && temp_host->last_check + cached_host_check_horizon < current_time) {
+#else
+			if(execute_host_checks && state_change == TRUE && temp_host->last_check + cached_host_check_horizon < current_time) {
+#endif
 				schedule_host_check(temp_host, current_time, CHECK_OPTION_DEPENDENCY_CHECK);
 				}
 			else {
@@ -792,7 +804,11 @@ int handle_async_service_check_result(service *temp_service, check_result *queue
 
 			log_debug_info(DEBUGL_CHECKS, 1, "Host is currently %s.\n", host_state_name(temp_host->current_state));
 
-			if(execute_host_checks) {
+#if 1//COSERVIT_RETRY_FIX
+			if(execute_host_checks_by_service && execute_host_checks && state_change == TRUE) {
+#else
+			if(execute_host_checks && state_change == TRUE) {
+#endif
 				schedule_host_check(temp_host, current_time, CHECK_OPTION_NONE);
 				}
 			/* else fake the host check, but (possibly) resend host notifications to contacts... */
