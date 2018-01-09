@@ -261,7 +261,7 @@ case "$1" in
 		$0 start
 		;;
 
-	reload|force-reload)
+	reload|force-reload|reload-or-restart)
 		if test "$checkconfig" = "true"; then
 			printf "Running configuration check...\n"
 			check_config
@@ -287,7 +287,7 @@ case "$1" in
 		;;
 
 	*)
-		echo "Usage: nagios {start|stop|restart|reload|force-reload|status|checkconfig|configtest}"
+		echo "Usage: nagios {start|stop|restart|reload|force-reload|reload-or-restart|status|checkconfig|configtest}"
 		exit 1
 		;;
 
