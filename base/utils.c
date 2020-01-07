@@ -1574,8 +1574,6 @@ time_t get_next_log_rotation_time(void) {
 
 	if(is_dst_now == TRUE && t->tm_isdst == 0)
 		run_time += 3600;
-	else if(is_dst_now == FALSE && t->tm_isdst > 0)
-		run_time -= 3600;
 
 	return run_time;
 	}
