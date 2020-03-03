@@ -2,6 +2,11 @@
 Nagios Core 4 Change Log
 ########################
 
+4.2.3.6 - 2019-12-19
+--------------------
+FIXES
+* next date for log rotation is no more rewinded during Daylight Saving Time changes
+
 4.2.3.5 - 2018-01-05
 --------------------
 ENHANCEMENTS
